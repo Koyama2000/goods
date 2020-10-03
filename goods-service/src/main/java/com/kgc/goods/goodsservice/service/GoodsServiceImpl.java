@@ -47,12 +47,10 @@ public class GoodsServiceImpl implements GoodsService {
         SearchSourceBuilder searchSourceBuilder=new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder=new BoolQueryBuilder();
 
-        if(district!=null&&district!=0) {
             MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("district", district);
             boolQueryBuilder.must(matchQueryBuilder);
             searchSourceBuilder.query(boolQueryBuilder);
             searchSourceBuilder.sort("id", SortOrder.DESC);
-        }
         String dsl=searchSourceBuilder.toString();
         Search search=new Search.Builder(dsl).addIndex("goods").addType("goodsinfo").build();
         try {
@@ -96,7 +94,7 @@ public class GoodsServiceImpl implements GoodsService {
                 jedis.setex(goodskey,i*60*10,JSON.toJSONString(goods));
             }else{
                 //空数据，存储30S，防止缓存穿透
-                jedis.setex(goodskey,5*6*1,"empty");
+                jedis.setex(goodskey,5* 6*1,"empty");
             }
             // 删除分布式锁
             lock.unlock();
